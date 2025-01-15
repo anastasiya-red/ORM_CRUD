@@ -44,6 +44,14 @@ class UserState(StatesGroup):
     growth = State()
     weight = State()
 
+
+class RegistrationState(StatesGroup):
+    username = State()
+    email = State()
+    age = State()
+    balance = 1000
+
+
 @dp.message_handler(commands = ['start'])
 async def start_message(message):
     await message.answer("Привет! Я бот, помогающий твоему здоровью", reply_markup = kb)
@@ -52,6 +60,7 @@ async def start_message(message):
 @dp.message_handler(text = 'Рассчитать')
 async def main_menu(message):
     await message.answer('Выберите опцию:', reply_markup = inline_kb)
+
 
 @dp.message_handler(text = 'Купить')
 async def get_buying_list(message):
@@ -67,6 +76,7 @@ async def get_buying_list(message):
 async def send_confirm_message(call):
     await call.message.answer("Вы успешно приобрели продукт!")
 
+
 @dp.callback_query_handler(text='formulas')
 async def get_formulas(call):
     await call.message.answer('10 x вес (кг) + 6,25 x рост (см) – 5 x возраст (г) – 161')
@@ -76,10 +86,6 @@ async def get_formulas(call):
 async def set_age(call):
     await call.message.answer('Введите свой возраст:')
     await UserState.age.set()
-#
-# @dp.message_handler()
-# async def start_message(message):
-#     await message.answer("Введите команду /start, чтобы начать общение.")
 
 @dp.message_handler(state = UserState.age)
 async def set_growth(message, state):
@@ -106,12 +112,6 @@ async def send_calories(message, state):
     finally:
         await state.finish()
 
-
-class RegistrationState(StatesGroup):
-    username = State()
-    email = State()
-    age = State()
-    balance = 1000
 
 @dp.message_handler(text='Регистрация')
 async def sing_up(message):
@@ -147,7 +147,10 @@ async def set_age(message, state):
     await state.finish()
 
 
+@dp.message_handler()
+async def all_message(message):
+    await message.answer("Введите команду /start, чтобы начать общение.")
+
+
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
-
-
